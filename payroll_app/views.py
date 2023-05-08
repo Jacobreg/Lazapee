@@ -53,12 +53,34 @@ def update_employee(request, pk):
                       {"e": employee})
 
 def payslips(request):
+    employee_objs = Employee.objects.all()
+    payslip_objs = Payslip.objects.all()
+    
     if request.method == "POST":
-        pass
+        payroll = request.POST.get('payroll')
+        month = request.POST.get('month')
+        year = request.POST.get('year')
+        cycle = request.POST.get('cycle')
+        employee = Employee.objects.get(pk=payroll)
+        #rate = Employee.objects.get(pk=payroll)  im not sure yet how to get the rate of the foreign key, put 1 as temp value
+        Payslip.objects.create(id_number=employee, 
+                               month=month, 
+                               year=year,
+                               pay_cycle=cycle,
+                               rate=1,
+                               earnings_allowance=1,
+                               deductions_tax=1,
+                               deductions_health=1,
+                               pag_ibig=1,
+                               sss=1,
+                               overtime=1,
+                               total_pay=1, 
+                              )
+        return redirect('payslips')
     else:
-        payslip_objs = Payslip.objects.all()
+        
         return render(request, 'payroll_app/payslips.html',
-                      {'payslips': payslip_objs})
+                      {'payslips': payslip_objs, "employees": employee_objs})
 
 def view_payslip(request, pk):
     payslip = get_object_or_404(Payslip, pk=pk)
