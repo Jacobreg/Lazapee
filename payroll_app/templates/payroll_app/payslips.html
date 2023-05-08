@@ -17,7 +17,9 @@
                              <select class="form-control" id="payroll" name="payroll">
                                  <option value="" disabled selected>Select an option</option>
                                  <option value="allEmployees">All Employees</option>
-                                 <option value="everyIDNumber">Every employee ID Number</option>
+                                 {% for employee in employees %}
+                                    <option value="{{ employee.id_number }}">{{ employee.id_number }}</option>
+                                 {% endfor %}
                              </select>
                          </div>
                      </div>
