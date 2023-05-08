@@ -46,7 +46,16 @@ def create_employee(request):
 
 def update_employee(request, pk):
     if request.method == "POST":
-        pass
+        name = request.POST.get('name')
+        id_number = request.POST.get('id_number')
+        rate = request.POST.get('rate')
+        allowance = request.POST.get('allowance')
+        
+        Employee.objects.filter(pk=pk).update(name=name,
+                                id_number=id_number,
+                                rate=rate,
+                                allowance=allowance)
+        return redirect('employees')
     else:
         employee = get_object_or_404(Employee, pk=pk)
         return render(request, 'payroll_app/update_employee.html',
