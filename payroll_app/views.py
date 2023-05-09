@@ -53,12 +53,64 @@ def update_employee(request, pk):
                       {"e": employee})
 
 def payslips(request):
+    employee_objs = Employee.objects.all()
+    payslip_objs = Payslip.objects.all()
+    
     if request.method == "POST":
-        pass
+        payroll = request.POST.get('payroll')
+        month = request.POST.get('month')
+        year = request.POST.get('year')
+        cycle = request.POST.get('cycle')
+        employee = Employee.objects.get(pk=payroll)
+        rate = employee.getRate()
+        overtime = employee.getOvertime()
+        earnings_allowance =  employee.getAllowance()
+        deductions_tax = 0.2
+        deductions_health= employee.getRate() * 0.04
+        total_pay=0
+        pag_ibig=100
+        sss=employee.getRate() * 0.045   
+        
+        if cycle == '1':
+            tax = ((employee.getRate() / 2) + employee.getAllowance() + employee.getOvertime() - pag_ibig) * 0.2
+            total_pay = ((employee.getRate() / 2) + employee.getAllowance() + employee.getOvertime() - pag_ibig) - tax
+            Payslip.objects.create(id_number=employee, 
+                                month=month, 
+                                year=year,
+                                pay_cycle=cycle,
+                                rate=rate,
+                                earnings_allowance=earnings_allowance,
+                                overtime=overtime,
+                                total_pay= total_pay,  
+                                deductions_health= deductions_health,
+                                deductions_tax = deductions_health,
+                                pag_ibig=100,
+                                sss=sss,
+                              )
+             
+        if cycle == '2':
+            tax = ((employee.getRate() / 2) + employee.getAllowance() + employee.getOvertime() - deductions_health - sss) * 0.2
+            total_pay = ((employee.getRate() / 2) + employee.getAllowance() + employee.getOvertime() - deductions_health - sss) - tax
+            
+
+            Payslip.objects.create(id_number=employee, 
+                                    month=month, 
+                                    year=year,
+                                    pay_cycle=cycle,
+                                    rate=rate,
+                                    earnings_allowance=earnings_allowance,
+                                    overtime=overtime,
+                                    total_pay= total_pay,  
+                                    deductions_health=deductions_health,
+                                    deductions_tax =  deductions_tax,
+                                    pag_ibig=100,
+                                    sss=sss,
+                                )
+        return redirect('payslips')
     else:
-        payslip_objs = Payslip.objects.all()
+        
         return render(request, 'payroll_app/payslips.html',
-                      {'payslips': payslip_objs})
+                      {'payslips': payslip_objs, "employees": employee_objs})
 
 def view_payslip(request, pk):
     payslip = get_object_or_404(Payslip, pk=pk)
